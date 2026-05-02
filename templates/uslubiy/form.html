@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a href="{{ url_for('uslubiy_list') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i>Orqaga
+  </a>
+</div>
+
+<div class="form-card">
+  <h5 class="fw-bold mb-4" style="color:#148f77;">
+    <i class="fas fa-book me-2"></i>{{ title }}
+  </h5>
+
+  <form method="POST" enctype="multipart/form-data" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.sarlavha.label(class="form-label") }}
+      {{ form.sarlavha(class="form-control", placeholder="Uslubiy ish sarlavhasi...") }}
+      {% for e in form.sarlavha.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-3">
+      {{ form.hammuallif.label(class="form-label") }}
+      {{ form.hammuallif(class="form-control", placeholder="Familiya I.Sh. (ixtiyoriy)") }}
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        {{ form.tur.label(class="form-label") }}
+        {{ form.tur(class="form-select") }}
+      </div>
+      <div class="col-md-6">
+        {{ form.fan_nomi.label(class="form-label") }}
+        {{ form.fan_nomi(class="form-control", placeholder="Fan nomi...") }}
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        {{ form.yil.label(class="form-label") }}
+        {{ form.yil(class="form-control", placeholder="2024") }}
+        {% for e in form.yil.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-6">
+        {{ form.nashriyot.label(class="form-label") }}
+        {{ form.nashriyot(class="form-control", placeholder="Nashriyot nomi...") }}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      {{ form.fayl.label(class="form-label") }}
+      {{ form.fayl(class="form-control") }}
+      {% if ish and ish.fayl_path %}
+        <div class="form-text text-success">
+          <i class="fas fa-paperclip me-1"></i>Mavjud: {{ ish.fayl_path }}
+        </div>
+      {% endif %}
+      {% for e in form.fayl.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+
+    <div class="mb-4">
+      {{ form.tavsif.label(class="form-label") }}
+      {{ form.tavsif(class="form-control", rows=4, placeholder="Qisqacha tavsif...") }}
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-save me-2"></i>Saqlash
+      </button>
+      <a href="{{ url_for('uslubiy_list') }}" class="btn btn-outline-secondary">Bekor qilish</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="uz" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Kafedra Ilmiy-Uslubiy Tizimi{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+  {% block head %}{% endblock %}
+  <script>
+    // Apply saved theme before render to avoid flash
+    (function(){
+      const t = localStorage.getItem('theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+
+<!-- ── NAVBAR ──────────────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <button class="btn btn-link text-white me-2 d-lg-none p-0" id="sidebarToggle">
+      <i class="fas fa-bars fa-lg"></i>
+    </button>
+    <a class="navbar-brand text-white d-flex align-items-center" href="{{ url_for('index') }}">
+      <img src="{{ url_for('static', filename='img/logo.svg') }}" height="36" alt="Kafedra IU Tizimi">
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <!-- Dark mode toggle -->
+      <button class="dark-toggle" id="darkToggle" title="Mavzuni o'zgartirish">
+        <i id="darkToggleIcon" class="fas fa-moon" style="
+          position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+          color:#fff;font-size:0.65rem;pointer-events:none;"></i>
+      </button>
+
+      {% if current_user.is_authenticated %}
+        {% if current_user.role == 'admin' and pending_count > 0 %}
+          <a href="{{ url_for('admin_kutilmoqda') }}" class="btn btn-sm btn-warning position-relative">
+            <i class="fas fa-bell"></i>
+            <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill">
+              {{ pending_count }}
+            </span>
+          </a>
+        {% endif %}
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+            {% if current_user.xodim and current_user.xodim.photo_path %}
+              <img src="{{ url_for('download_file', filename=current_user.xodim.photo_path) }}"
+                   style="width:20px;height:20px;border-radius:50%;object-fit:cover;" class="me-1">
+            {% else %}
+              <i class="fas fa-user-circle me-1"></i>
+            {% endif %}
+            {{ current_user.full_name.split()[0] }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+            <li><span class="dropdown-item-text small text-muted">{{ current_user.email }}</span></li>
+            <li><span class="dropdown-item-text small">
+              {% if current_user.role == 'admin' %}<span class="badge bg-danger">Admin</span>
+              {% elif current_user.role == 'teacher' %}<span class="badge bg-primary">O'qituvchi</span>
+              {% else %}<span class="badge bg-secondary">Talaba</span>{% endif %}
+            </span></li>
+            <li><hr class="dropdown-divider"></li>
+            {% if current_user.role == 'teacher' and current_user.xodim %}
+              <li><a class="dropdown-item" href="{{ url_for('xodim_detail', id=current_user.xodim.id) }}">
+                <i class="fas fa-id-card me-2"></i>Profilim</a></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="{{ url_for('dashboard') }}">
+              <i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+            {% if current_user.role == 'student' %}
+            <li><a class="dropdown-item" href="{{ url_for('talaba_kabinet') }}">
+              <i class="fas fa-graduation-cap me-2"></i>Kabinetim</a></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="{{ url_for('settings') }}">
+              <i class="fas fa-cog me-2"></i>Sozlamalar</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+              <i class="fas fa-sign-out-alt me-2"></i>Chiqish</a></li>
+          </ul>
+        </div>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-light">
+          <i class="fas fa-sign-in-alt me-1"></i>Kirish
+        </a>
+        <a href="{{ url_for('register') }}" class="btn btn-sm btn-light text-primary">
+          <i class="fas fa-user-plus me-1"></i>Ro'yxat
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+
+<div style="padding-top: 60px; display: flex;">
+
+  <!-- ── SIDEBAR ──────────────────────────────────────────────── -->
+  <div class="sidebar">
+    <div class="pt-3 pb-2">
+
+      <div class="sidebar-heading">Asosiy</div>
+      <a href="{{ url_for('index') }}" class="nav-link">
+        <i class="fas fa-home fa-fw"></i> Bosh sahifa
+      </a>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('dashboard') }}" class="nav-link">
+        <i class="fas fa-chart-bar fa-fw"></i> Dashboard
+      </a>
+      {% if current_user.role == 'student' %}
+      <a href="{{ url_for('talaba_kabinet') }}" class="nav-link">
+        <i class="fas fa-graduation-cap fa-fw"></i> Kabinetim
+      </a>
+      {% endif %}
+      {% endif %}
+
+      <div class="sidebar-heading mt-2">Ilmiy bazalar</div>
+      <a href="{{ url_for('ilmiy_list') }}" class="nav-link">
+        <i class="fas fa-flask fa-fw"></i> Ilmiy ishlar
+      </a>
+      <a href="{{ url_for('uslubiy_list') }}" class="nav-link">
+        <i class="fas fa-book fa-fw"></i> Uslubiy ishlar
+      </a>
+
+      <div class="sidebar-heading mt-2">Kafedra</div>
+      <a href="{{ url_for('xodimlar_list') }}" class="nav-link">
+        <i class="fas fa-users fa-fw"></i> Xodimlar
+      </a>
+      <a href="{{ url_for('fanlar_list') }}" class="nav-link">
+        <i class="fas fa-graduation-cap fa-fw"></i> Fanlar
+      </a>
+      <a href="{{ url_for('yangiliklar_list') }}" class="nav-link">
+        <i class="fas fa-newspaper fa-fw"></i> Yangiliklar
+      </a>
+
+      {% if current_user.is_authenticated %}
+      <div class="sidebar-heading mt-2">Tahlil</div>
+      <a href="{{ url_for('hisobotlar') }}" class="nav-link">
+        <i class="fas fa-file-alt fa-fw"></i> Hisobotlar
+      </a>
+      {% endif %}
+
+      {% if current_user.is_authenticated and current_user.role in ('admin', 'teacher') %}
+      <div class="sidebar-heading mt-2">Qo'shish</div>
+      <a href="{{ url_for('ilmiy_qoshish') }}" class="nav-link">
+        <i class="fas fa-plus-circle fa-fw"></i> Ilmiy ish
+      </a>
+      <a href="{{ url_for('uslubiy_qoshish') }}" class="nav-link">
+        <i class="fas fa-plus-square fa-fw"></i> Uslubiy ish
+      </a>
+      <a href="{{ url_for('fan_qoshish') }}" class="nav-link">
+        <i class="fas fa-plus fa-fw"></i> Fan
+      </a>
+      {% endif %}
+
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+      <div class="sidebar-heading mt-2">Admin</div>
+      <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+        <i class="fas fa-cog fa-fw"></i> Admin panel
+      </a>
+      <a href="{{ url_for('admin_users') }}" class="nav-link">
+        <i class="fas fa-user-cog fa-fw"></i> Foydalanuvchilar
+      </a>
+      <a href="{{ url_for('admin_kutilmoqda') }}" class="nav-link">
+        <i class="fas fa-clock fa-fw"></i> Kutilmoqda
+        {% if pending_count > 0 %}
+          <span class="badge bg-danger ms-auto">{{ pending_count }}</span>
+        {% endif %}
+      </a>
+      <a href="{{ url_for('yangilik_qoshish') }}" class="nav-link">
+        <i class="fas fa-edit fa-fw"></i> Yangilik yozish
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- ── MAIN ──────────────────────────────────────────────────── -->
+  <div class="main-content flex-grow-1">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-3">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible alert-auto fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────── -->
+<footer>
+  <p class="mb-0">
+    &copy; {{ now.year }} Kafedra Ilmiy-Uslubiy Ishlar Tizimi &mdash; Axborot texnologiyalari kafedrasi
+  </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

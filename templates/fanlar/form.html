@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Fan qo'shish — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <h5 class="fw-bold mb-4" style="color:#8e44ad;">
+    <i class="fas fa-graduation-cap me-2"></i>Fan qo'shish / tahrirlash
+  </h5>
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="row g-3 mb-3">
+      <div class="col-md-8">
+        {{ form.nomi.label(class="form-label") }}
+        {{ form.nomi(class="form-control", placeholder="Fan nomi...") }}
+        {% for e in form.nomi.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="col-md-4">
+        {{ form.kodi.label(class="form-label") }}
+        {{ form.kodi(class="form-control", placeholder="AT201") }}
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        {{ form.kurs.label(class="form-label") }}
+        {{ form.kurs(class="form-select") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.semestr.label(class="form-label") }}
+        {{ form.semestr(class="form-select") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.kredit.label(class="form-label") }}
+        {{ form.kredit(class="form-control", placeholder="3") }}
+      </div>
+      <div class="col-md-3">
+        {{ form.soatlar.label(class="form-label") }}
+        {{ form.soatlar(class="form-control", placeholder="60") }}
+      </div>
+    </div>
+    <div class="mb-3">
+      {{ form.mutaxassislik.label(class="form-label") }}
+      {{ form.mutaxassislik(class="form-control", placeholder="AT yo'nalishi...") }}
+    </div>
+    <div class="mb-4">
+      {{ form.tavsif.label(class="form-label") }}
+      {{ form.tavsif(class="form-control", rows=3, placeholder="Fan haqida qisqacha...") }}
+    </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save me-2"></i>Saqlash
+      </button>
+      <a href="{{ url_for('fanlar_list') }}" class="btn btn-outline-secondary">Bekor qilish</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

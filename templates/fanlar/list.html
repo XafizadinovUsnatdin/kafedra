@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}O'quv fanlari — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="page-title mb-0">
+    <i class="fas fa-graduation-cap"></i> O'quv fanlari
+  </div>
+  {% if current_user.is_authenticated and current_user.role in ('admin','teacher') %}
+  <a href="{{ url_for('fan_qoshish') }}" class="btn btn-primary btn-sm">
+    <i class="fas fa-plus me-1"></i>Fan qo'shish
+  </a>
+  {% endif %}
+</div>
+
+<!-- Filter -->
+<div class="search-box">
+  <form method="GET" class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label small fw-semibold mb-1">Fan nomi bo'yicha qidirish</label>
+      <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="fas fa-search"></i></span>
+        <input type="text" name="q" class="form-control" placeholder="Fan nomi..." value="{{ q }}">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small fw-semibold mb-1">Kurs</label>
+      <select name="kurs" class="form-select form-select-sm">
+        <option value="">Barchasi</option>
+        {% for k in range(1,5) %}
+          <option value="{{ k }}" {% if kurs==k|string %}selected{% endif %}>{{ k }}-kurs</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label small fw-semibold mb-1">Semestr</label>
+      <select name="semestr" class="form-select form-select-sm">
+        <option value="">Barchasi</option>
+        {% for s in range(1,9) %}
+          <option value="{{ s }}" {% if semestr==s|string %}selected{% endif %}>{{ s }}-semestr</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary btn-sm w-100">
+        <i class="fas fa-filter me-1"></i>Filtrlash
+      </button>
+    </div>
+  </form>
+</div>
+
+{% if fanlar %}
+<div class="row g-3">
+  {% for fan in fanlar %}
+  <div class="col-md-6 col-lg-4">
+    <div class="content-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="fw-bold mb-1">
+              <a href="{{ url_for('fan_detail', id=fan.id) }}" class="text-dark">{{ fan.nomi }}</a>
+            </h6>
+            {% if fan.kodi %}
+              <small class="text-muted">{{ fan.kodi }}</small>
+            {% endif %}
+          </div>
+          <div class="stat-icon purple" style="width:36px;height:36px;font-size:0.9rem;flex-shrink:0;">
+            <i class="fas fa-book"></i>
+          </div>
+        </div>
+        <hr class="my-2">
+        <div class="row g-1 small text-muted">
+          {% if fan.kurs %}
+            <div class="col-6"><i class="fas fa-user-graduate me-1"></i>{{ fan.kurs }}-kurs</div>
+          {% endif %}
+          {% if fan.semestr %}
+            <div class="col-6"><i class="fas fa-calendar me-1"></i>{{ fan.semestr }}-semestr</div>
+          {% endif %}
+          {% if fan.kredit %}
+            <div class="col-6"><i class="fas fa-star me-1"></i>{{ fan.kredit }} kredit</div>
+          {% endif %}
+          {% if fan.soatlar %}
+            <div class="col-6"><i class="fas fa-clock me-1"></i>{{ fan.soatlar }} soat</div>
+          {% endif %}
+        </div>
+        {% if fan.muallim %}
+          <div class="mt-2 small">
+            <i class="fas fa-chalkboard-teacher me-1 text-muted"></i>
+            {{ fan.muallim.full_name }}
+          </div>
+        {% endif %}
+        <div class="mt-2">
+          <a href="{{ url_for('fan_detail', id=fan.id) }}" class="btn btn-sm btn-outline-primary py-0 px-2">
+            <i class="fas fa-eye me-1"></i>Batafsil
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fas fa-graduation-cap"></i>
+  <p>Fanlar hali qo'shilmagan</p>
+</div>
+{% endif %}
+{% endblock %}

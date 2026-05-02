@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Yangilik yozish — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="form-card">
+  <h5 class="fw-bold mb-4 text-primary">
+    <i class="fas fa-newspaper me-2"></i>Yangilik yozish
+  </h5>
+  <form method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.sarlavha.label(class="form-label") }}
+      {{ form.sarlavha(class="form-control", placeholder="Yangilik sarlavhasi...") }}
+      {% for e in form.sarlavha.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="mb-3">
+      {{ form.matn.label(class="form-label") }}
+      {{ form.matn(class="form-control", rows=8, placeholder="Yangilik matni...") }}
+      {% for e in form.matn.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+    <div class="mb-4 form-check">
+      {{ form.is_published(class="form-check-input") }}
+      <label class="form-check-label">Hoziroq nashr qilish</label>
+    </div>
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-save me-2"></i>Saqlash
+    </button>
+  </form>
+</div>
+{% endblock %}

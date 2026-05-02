@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}{{ fan.nomi }} — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a href="{{ url_for('fanlar_list') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i>Orqaga
+  </a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="content-card">
+      <div class="card-header" style="background:#8e44ad;">
+        <i class="fas fa-graduation-cap me-2"></i>Fan ma'lumotlari
+      </div>
+      <div class="card-body">
+        <h5 class="fw-bold mb-3">{{ fan.nomi }}</h5>
+
+        {% if fan.kodi %}
+        <div class="detail-label">Fan kodi</div>
+        <div class="detail-value">{{ fan.kodi }}</div>
+        {% endif %}
+
+        {% if fan.muallim %}
+        <div class="detail-label">O'qituvchi</div>
+        <div class="detail-value">
+          {% if fan.muallim.xodim %}
+            <a href="{{ url_for('xodim_detail', id=fan.muallim.xodim.id) }}">{{ fan.muallim.full_name }}</a>
+          {% else %}{{ fan.muallim.full_name }}{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="row g-2 mt-2">
+          {% if fan.kurs %}
+          <div class="col-6">
+            <div class="detail-label">Kurs</div>
+            <div class="detail-value fw-bold">{{ fan.kurs }}-kurs</div>
+          </div>
+          {% endif %}
+          {% if fan.semestr %}
+          <div class="col-6">
+            <div class="detail-label">Semestr</div>
+            <div class="detail-value fw-bold">{{ fan.semestr }}-semestr</div>
+          </div>
+          {% endif %}
+          {% if fan.kredit %}
+          <div class="col-6">
+            <div class="detail-label">Kreditlar</div>
+            <div class="detail-value fw-bold">{{ fan.kredit }}</div>
+          </div>
+          {% endif %}
+          {% if fan.soatlar %}
+          <div class="col-6">
+            <div class="detail-label">Soatlar</div>
+            <div class="detail-value fw-bold">{{ fan.soatlar }}</div>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if fan.mutaxassislik %}
+        <div class="detail-label mt-2">Mutaxassislik</div>
+        <div class="detail-value">{{ fan.mutaxassislik }}</div>
+        {% endif %}
+
+        {% if fan.tavsif %}
+        <hr>
+        <div class="detail-label">Tavsif</div>
+        <p class="small mt-1">{{ fan.tavsif }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="content-card">
+      <div class="card-header" style="background:#148f77;">
+        <i class="fas fa-book me-2"></i>Tegishli uslubiy materiallar ({{ uslubiy|length }})
+      </div>
+      <div class="card-body p-0">
+        {% if uslubiy %}
+          {% for ish in uslubiy %}
+          <div class="d-flex align-items-start gap-3 p-3 border-bottom">
+            <div class="stat-icon green" style="width:36px;height:36px;font-size:0.9rem;flex-shrink:0;">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+              <a href="{{ url_for('uslubiy_detail', id=ish.id) }}" class="fw-semibold text-dark">
+                {{ ish.sarlavha }}
+              </a>
+              <div class="d-flex gap-2 mt-1">
+                <span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|replace('_',' ')|title }}</span>
+                <small class="text-muted">{{ ish.yil }}</small>
+                {% if ish.fayl_path %}
+                  <a href="{{ url_for('download_file', filename=ish.fayl_path) }}" class="small text-success">
+                    <i class="fas fa-download me-1"></i>Yuklab olish
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state py-4">
+            <i class="fas fa-book-open" style="font-size:2rem;"></i>
+            <p class="small mt-2">Bu fan uchun uslubiy materiallar yo'q</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

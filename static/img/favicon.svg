@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#1a5276"/>
+
+  <!-- University building / columns -->
+  <rect x="10" y="38" width="44" height="14" rx="2" fill="#fff" opacity="0.95"/>
+  <rect x="14" y="26" width="6" height="14" fill="#fff" opacity="0.9"/>
+  <rect x="22" y="26" width="6" height="14" fill="#fff" opacity="0.9"/>
+  <rect x="36" y="26" width="6" height="14" fill="#fff" opacity="0.9"/>
+  <rect x="44" y="26" width="6" height="14" fill="#fff" opacity="0.9"/>
+
+  <!-- Pediment / triangle roof -->
+  <polygon points="6,26 32,10 58,26" fill="#2980b9"/>
+  <polygon points="10,26 32,13 54,26" fill="#fff" opacity="0.15"/>
+
+  <!-- Star / lamp on top -->
+  <circle cx="32" cy="9" r="3.5" fill="#f39c12"/>
+  <circle cx="32" cy="9" r="2" fill="#fff"/>
+
+  <!-- Door -->
+  <rect x="27" y="40" width="10" height="12" rx="5" fill="#1a5276"/>
+
+  <!-- Book symbol inside pediment -->
+  <rect x="27" y="17" width="10" height="7" rx="1" fill="#fff" opacity="0.8"/>
+  <line x1="32" y1="17" x2="32" y2="24" stroke="#2980b9" stroke-width="1"/>
+</svg>

@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <i class="fas fa-cog"></i> Admin boshqaruv paneli
+</div>
+
+<!-- Stat cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+      <div>
+        <div class="stat-value text-primary">{{ user_count }}</div>
+        <div class="stat-label">Jami foydalanuvchilar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card orange">
+      <div class="stat-icon orange"><i class="fas fa-flask"></i></div>
+      <div>
+        <div class="stat-value" style="color:#e67e22;">{{ ilmiy_pending }}</div>
+        <div class="stat-label">Kutilayotgan ilmiy ishlar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card purple">
+      <div class="stat-icon purple"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-value" style="color:#8e44ad;">{{ uslubiy_pending }}</div>
+        <div class="stat-label">Kutilayotgan uslubiy ishlar</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Quick actions -->
+  <div class="col-md-4">
+    <div class="content-card">
+      <div class="card-header">Tezkor havolalar</div>
+      <div class="card-body d-grid gap-2">
+        <a href="{{ url_for('admin_kutilmoqda') }}" class="btn btn-warning">
+          <i class="fas fa-clock me-2"></i>
+          Kutilayotgan ishlar
+          {% if ilmiy_pending + uslubiy_pending > 0 %}
+            <span class="badge bg-danger ms-2">{{ ilmiy_pending + uslubiy_pending }}</span>
+          {% endif %}
+        </a>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-primary">
+          <i class="fas fa-user-cog me-2"></i>Foydalanuvchilarni boshqarish
+        </a>
+        <a href="{{ url_for('ilmiy_list') }}" class="btn btn-outline-primary">
+          <i class="fas fa-flask me-2"></i>Barcha ilmiy ishlar
+        </a>
+        <a href="{{ url_for('uslubiy_list') }}" class="btn btn-outline-success">
+          <i class="fas fa-book me-2"></i>Barcha uslubiy ishlar
+        </a>
+        <a href="{{ url_for('hisobotlar') }}" class="btn btn-outline-secondary">
+          <i class="fas fa-chart-bar me-2"></i>Hisobotlar
+        </a>
+        <a href="{{ url_for('yangilik_qoshish') }}" class="btn btn-outline-info">
+          <i class="fas fa-newspaper me-2"></i>Yangilik yozish
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent users -->
+  <div class="col-md-8">
+    <div class="content-card">
+      <div class="card-header d-flex justify-content-between">
+        <span>So'nggi ro'yxatdan o'tgan foydalanuvchilar</span>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-light">Barchasi</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table-custom table mb-0">
+          <thead>
+            <tr>
+              <th>F.I.Sh.</th>
+              <th>Username</th>
+              <th>Rol</th>
+              <th>Sana</th>
+              <th>Holat</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in so_nggi_users %}
+            <tr>
+              <td class="fw-semibold small">{{ u.full_name }}</td>
+              <td class="small text-muted">{{ u.username }}</td>
+              <td>
+                {% if u.role == 'admin' %}
+                  <span class="badge bg-danger">Admin</span>
+                {% elif u.role == 'teacher' %}
+                  <span class="badge bg-primary">O'qituvchi</span>
+                {% else %}
+                  <span class="badge bg-secondary">Talaba</span>
+                {% endif %}
+              </td>
+              <td class="small text-muted">{{ u.created_at.strftime('%d.%m.%Y') }}</td>
+              <td>
+                {% if u.is_active %}
+                  <span class="badge bg-success">Faol</span>
+                {% else %}
+                  <span class="badge bg-secondary">Bloklangan</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

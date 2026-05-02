@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Talaba kabineti — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="page-title"><i class="fas fa-graduation-cap"></i> Talaba kabineti</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fas fa-graduation-cap"></i></div>
+      <div>
+        <div class="stat-value text-primary">{{ fanlar|length }}</div>
+        <div class="stat-label">Mavjud fanlar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-value" style="color:#27ae60;">{{ uslubiy|length }}</div>
+        <div class="stat-label">O'quv materiallari</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card orange">
+      <div class="stat-icon orange"><i class="fas fa-flask"></i></div>
+      <div>
+        <div class="stat-value" style="color:#e67e22;">{{ ilmiy|length }}</div>
+        <div class="stat-label">Ilmiy maqolalar</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Fanlar ro'yxati -->
+  <div class="col-lg-5">
+    <div class="content-card">
+      <div class="card-header" style="background:#8e44ad;">
+        <i class="fas fa-graduation-cap me-2"></i>O'quv fanlari
+      </div>
+      <div class="card-body p-0" style="max-height:400px;overflow-y:auto;">
+        {% if fanlar %}
+          {% for fan in fanlar %}
+          <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+            <div>
+              <a href="{{ url_for('fan_detail', id=fan.id) }}" class="fw-semibold small text-dark">
+                {{ fan.nomi }}
+              </a>
+              <div class="text-muted" style="font-size:0.76rem;">
+                {{ fan.kurs }}-kurs, {{ fan.semestr }}-semestr
+                {% if fan.kredit %} &bull; {{ fan.kredit }} kredit{% endif %}
+              </div>
+            </div>
+            <a href="{{ url_for('fan_detail', id=fan.id) }}"
+               class="btn btn-sm btn-outline-secondary py-0 px-2">
+              <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state py-3"><small class="text-muted">Fanlar mavjud emas</small></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- O'quv materiallari -->
+  <div class="col-lg-7">
+    <div class="content-card mb-3">
+      <div class="card-header" style="background:#148f77;">
+        <i class="fas fa-book me-2"></i>So'nggi uslubiy materiallar
+      </div>
+      <div class="card-body p-0">
+        {% for ish in uslubiy[:8] %}
+        <div class="d-flex align-items-start gap-2 p-2 border-bottom">
+          <div class="stat-icon green" style="width:32px;height:32px;font-size:0.8rem;flex-shrink:0;">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <div class="flex-grow-1 min-width-0">
+            <a href="{{ url_for('uslubiy_detail', id=ish.id) }}" class="small fw-semibold text-dark d-block text-truncate">
+              {{ ish.sarlavha }}
+            </a>
+            <div class="d-flex gap-2 align-items-center mt-1">
+              <span class="badge-tur badge-{{ ish.tur }}" style="font-size:0.68rem;">
+                {{ ish.tur|replace('_',' ')|title }}
+              </span>
+              <small class="text-muted">{{ ish.muallif.full_name.split()[0] }}</small>
+              {% if ish.fayl_path %}
+              <a href="{{ url_for('download_file', filename=ish.fayl_path) }}"
+                 class="small text-success ms-auto">
+                <i class="fas fa-download"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <div class="p-2 text-center">
+          <a href="{{ url_for('uslubiy_list') }}" class="btn btn-sm btn-outline-success">
+            Barcha materiallar <i class="fas fa-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Yangiliklar -->
+    <div class="content-card">
+      <div class="card-header" style="background:#7d3c98;">
+        <i class="fas fa-newspaper me-2"></i>Yangiliklar
+      </div>
+      <div class="card-body p-0">
+        {% for y in yangiliklar %}
+        <div class="p-3 border-bottom">
+          <div class="text-muted" style="font-size:0.75rem;">
+            {{ y.created_at.strftime('%d.%m.%Y') }}
+          </div>
+          <a href="{{ url_for('yangilik_detail', id=y.id) }}" class="fw-semibold small text-dark">
+            {{ y.sarlavha }}
+          </a>
+        </div>
+        {% endfor %}
+        <div class="p-2 text-center">
+          <a href="{{ url_for('yangiliklar_list') }}" class="btn btn-sm btn-outline-secondary">
+            Barchasi
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

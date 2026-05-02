@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block title %}Hisobotlar — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="page-title mb-0">
+    <i class="fas fa-file-alt"></i> Hisobotlar va Statistika
+  </div>
+  <div class="d-flex gap-2 align-items-center flex-wrap">
+    <!-- Yil tanlash -->
+    <form method="GET" class="d-flex gap-2 align-items-center">
+      <label class="fw-semibold small mb-0">Yil:</label>
+      <select name="yil" class="form-select form-select-sm" style="width:100px;" onchange="this.form.submit()">
+        {% for y in yillar %}
+          <option value="{{ y }}" {% if y == yil %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    <!-- Export tugmalari -->
+    <a href="{{ url_for('hisobotlar_excel', yil=yil) }}" class="btn btn-sm btn-success">
+      <i class="fas fa-file-excel me-1"></i>Excel
+    </a>
+    <a href="{{ url_for('hisobotlar_pdf', yil=yil) }}" class="btn btn-sm btn-danger">
+      <i class="fas fa-file-pdf me-1"></i>PDF
+    </a>
+  </div>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fas fa-flask"></i></div>
+      <div>
+        <div class="stat-value text-primary">{{ ilmiy_jami }}</div>
+        <div class="stat-label">Jami ilmiy ishlar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-value" style="color:#27ae60;">{{ uslubiy_jami }}</div>
+        <div class="stat-label">Jami uslubiy ishlar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card orange">
+      <div class="stat-icon orange"><i class="fas fa-flask"></i></div>
+      <div>
+        <div class="stat-value" style="color:#e67e22;">{{ ilmiy_bu_yil }}</div>
+        <div class="stat-label">{{ yil }}-yilda ilmiy ishlar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card purple">
+      <div class="stat-icon purple"><i class="fas fa-book"></i></div>
+      <div>
+        <div class="stat-value" style="color:#8e44ad;">{{ uslubiy_bu_yil }}</div>
+        <div class="stat-label">{{ yil }}-yilda uslubiy ishlar</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Xodimlar faolligi jadvali -->
+<div class="content-card">
+  <div class="card-header">
+    <i class="fas fa-table me-2"></i>
+    {{ yil }}-yil — Xodimlar faolligi jadvali
+  </div>
+  <div class="card-body p-0">
+    {% if xodimlar_stat %}
+    <div class="table-responsive">
+      <table class="table-custom table mb-0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>F.I.Sh.</th>
+            <th>Lavozim</th>
+            <th>Ilmiy daraja</th>
+            <th class="text-center">Ilmiy ishlar</th>
+            <th class="text-center">Uslubiy ishlar</th>
+            <th class="text-center">Jami</th>
+            <th>Faollik</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in xodimlar_stat %}
+          <tr>
+            <td class="text-muted small">{{ loop.index }}</td>
+            <td>
+              <a href="{{ url_for('xodim_detail', id=item.xodim.id) }}" class="fw-semibold text-dark">
+                {{ item.xodim.user.full_name }}
+              </a>
+            </td>
+            <td class="small">{{ item.xodim.lavozim or '—' }}</td>
+            <td class="small">
+              {% if item.xodim.ilmiy_daraja and item.xodim.ilmiy_daraja != 'yoq' %}
+                <span class="badge bg-primary">{{ item.xodim.ilmiy_daraja|upper }}</span>
+              {% else %}—{% endif %}
+            </td>
+            <td class="text-center">
+              <span class="badge {% if item.ilmiy > 0 %}bg-primary{% else %}bg-light text-dark{% endif %}">
+                {{ item.ilmiy }}
+              </span>
+            </td>
+            <td class="text-center">
+              <span class="badge {% if item.uslubiy > 0 %}bg-success{% else %}bg-light text-dark{% endif %}">
+                {{ item.uslubiy }}
+              </span>
+            </td>
+            <td class="text-center fw-bold">{{ item.jami }}</td>
+            <td>
+              {% if item.jami >= 5 %}
+                <span class="badge bg-success">Yuqori</span>
+              {% elif item.jami >= 2 %}
+                <span class="badge bg-primary">O'rtacha</span>
+              {% elif item.jami >= 1 %}
+                <span class="badge bg-warning text-dark">Past</span>
+              {% else %}
+                <span class="badge bg-secondary">Faoliyat yo'q</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="table-light fw-bold">
+            <td colspan="4" class="text-end">Jami:</td>
+            <td class="text-center text-primary">{{ xodimlar_stat|sum(attribute='ilmiy') }}</td>
+            <td class="text-center text-success">{{ xodimlar_stat|sum(attribute='uslubiy') }}</td>
+            <td class="text-center">{{ xodimlar_stat|sum(attribute='jami') }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state"><p>Ma'lumot topilmadi</p></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

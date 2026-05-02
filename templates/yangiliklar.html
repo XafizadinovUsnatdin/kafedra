@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Yangiliklar — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div class="page-title mb-0">
+    <i class="fas fa-newspaper"></i> Yangiliklar
+  </div>
+  {% if current_user.is_authenticated and current_user.role == 'admin' %}
+  <a href="{{ url_for('yangilik_qoshish') }}" class="btn btn-primary btn-sm">
+    <i class="fas fa-plus me-1"></i>Yangilik qo'shish
+  </a>
+  {% endif %}
+</div>
+
+{% if yangiliklar %}
+<div class="row g-3">
+  {% for y in yangiliklar %}
+  <div class="col-md-6">
+    <div class="content-card">
+      <div class="card-body">
+        <div class="text-muted small mb-2">
+          <i class="fas fa-calendar-alt me-1"></i>{{ y.created_at.strftime('%d.%m.%Y') }}
+          &bull; <i class="fas fa-user me-1"></i>{{ y.muallif.full_name if y.muallif else 'Admin' }}
+        </div>
+        <h5 class="fw-bold mb-2">
+          <a href="{{ url_for('yangilik_detail', id=y.id) }}" class="text-dark">{{ y.sarlavha }}</a>
+        </h5>
+        <p class="text-muted mb-3">{{ y.matn[:200] }}{% if y.matn|length > 200 %}...{% endif %}</p>
+        <a href="{{ url_for('yangilik_detail', id=y.id) }}" class="btn btn-sm btn-outline-primary">
+          Batafsil o'qish <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fas fa-newspaper"></i>
+  <p>Hozircha yangiliklar yo'q</p>
+</div>
+{% endif %}
+{% endblock %}

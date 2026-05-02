@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% block title %}{{ ish.sarlavha[:60] }} — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+  <a href="{{ url_for('uslubiy_list') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i>Orqaga
+  </a>
+  {% if current_user.is_authenticated and (current_user.role == 'admin' or current_user.id == ish.muallif_id) %}
+  <a href="{{ url_for('uslubiy_tahrirlash', id=ish.id) }}" class="btn btn-sm btn-outline-success">
+    <i class="fas fa-edit me-1"></i>Tahrirlash
+  </a>
+  <form method="POST" action="{{ url_for('uslubiy_ochirish', id=ish.id) }}" class="d-inline">
+    <button class="btn btn-sm btn-outline-danger btn-delete-confirm">
+      <i class="fas fa-trash me-1"></i>O'chirish
+    </button>
+  </form>
+  {% endif %}
+  <div class="ms-auto d-flex gap-3">
+    <span class="counter-badge">
+      <i class="fas fa-eye text-success"></i> {{ ish.views_count or 0 }} ko'rishlar
+    </span>
+    <span class="counter-badge">
+      <i class="fas fa-download" style="color:#148f77;"></i> {{ ish.downloads_count or 0 }} yuklamalar
+    </span>
+    <span class="counter-badge">
+      <i class="fas fa-comments text-muted"></i> {{ ish.izohlar|length }} izoh
+    </span>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="content-card">
+      <div class="card-header" style="background:#148f77;">
+        <i class="fas fa-book me-2"></i>Uslubiy ish tafsiloti
+      </div>
+      <div class="card-body">
+        <h4 class="fw-bold mb-3">{{ ish.sarlavha }}</h4>
+
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|replace('_',' ')|title }}</span>
+          <span class="badge-tur badge-{{ ish.holat }}">
+            {% if ish.holat == 'tasdiqlangan' %}&#10003; Tasdiqlangan{% else %}Kutilmoqda{% endif %}
+          </span>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="detail-label">Muallif</div>
+            <div class="detail-value">
+              {% if ish.muallif.xodim %}
+                <a href="{{ url_for('xodim_detail', id=ish.muallif.xodim.id) }}">
+                  {{ ish.muallif.full_name }}
+                </a>
+              {% else %}{{ ish.muallif.full_name }}{% endif %}
+            </div>
+            {% if ish.hammuallif %}
+            <div class="detail-label">Hammuallif(lar)</div>
+            <div class="detail-value">{{ ish.hammuallif }}</div>
+            {% endif %}
+            {% if ish.fan_nomi %}
+            <div class="detail-label">Fan nomi</div>
+            <div class="detail-value">{{ ish.fan_nomi }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <div class="detail-label">Nashr yili</div>
+            <div class="detail-value fw-semibold fs-5">{{ ish.yil }}</div>
+            {% if ish.nashriyot %}
+            <div class="detail-label">Nashriyot</div>
+            <div class="detail-value">{{ ish.nashriyot }}</div>
+            {% endif %}
+            <div class="detail-label">Qo'shilgan sana</div>
+            <div class="detail-value">{{ ish.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+          </div>
+        </div>
+
+        {% if ish.tavsif %}
+        <hr>
+        <div class="detail-label">Qisqacha tavsif</div>
+        <p class="mt-2">{{ ish.tavsif }}</p>
+        {% endif %}
+
+        {% if ish.fayl_path %}
+        <hr>
+        <a href="{{ url_for('download_file', filename=ish.fayl_path) }}" class="btn btn-success">
+          <i class="fas fa-download me-2"></i>Faylni yuklab olish
+        </a>
+        {% endif %}
+
+        {% if current_user.is_authenticated and current_user.role == 'admin' and ish.holat == 'kutilmoqda' %}
+        <hr>
+        <div class="d-flex gap-2">
+          <form method="POST" action="{{ url_for('admin_uslubiy_tasdiqlash', id=ish.id) }}">
+            <input type="hidden" name="holat" value="tasdiqlangan">
+            <button class="btn btn-success btn-sm"><i class="fas fa-check me-1"></i>Tasdiqlash</button>
+          </form>
+          <form method="POST" action="{{ url_for('admin_uslubiy_tasdiqlash', id=ish.id) }}">
+            <input type="hidden" name="holat" value="rad_etilgan">
+            <button class="btn btn-danger btn-sm"><i class="fas fa-times me-1"></i>Rad etish</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Izohlar -->
+    <div class="content-card">
+      <div class="card-header" style="background:#5d6d7e;">
+        <i class="fas fa-comments me-2"></i>Izohlar ({{ ish.izohlar|length }})
+      </div>
+      <div class="card-body">
+        {% if ish.izohlar %}
+          {% for izoh in ish.izohlar %}
+          <div class="izoh-card">
+            <div class="izoh-meta">
+              <i class="fas fa-user me-1"></i><strong>{{ izoh.muallif.full_name }}</strong>
+              &bull; {{ izoh.created_at.strftime('%d.%m.%Y %H:%M') }}
+            </div>
+            <p class="mb-0 small">{{ izoh.matn }}</p>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="text-muted small">Hozircha izohlar yo'q.</p>
+        {% endif %}
+
+        {% if current_user.is_authenticated %}
+        <hr>
+        <h6 class="fw-bold mb-2">Izoh qoldirish</h6>
+        <form method="POST" action="{{ url_for('uslubiy_izoh', id=ish.id) }}" novalidate>
+          {{ form.hidden_tag() }}
+          {{ form.matn(class="form-control mb-2", rows=3, placeholder="Izohingizni yozing...") }}
+          <button type="submit" class="btn btn-sm btn-success">
+            <i class="fas fa-paper-plane me-1"></i>Yuborish
+          </button>
+        </form>
+        {% else %}
+        <p class="text-muted small mt-2">
+          <a href="{{ url_for('login') }}">Kiring</a> va izoh qoldiring.
+        </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="col-lg-4">
+    <div class="content-card">
+      <div class="card-header" style="background:#148f77;">
+        <i class="fas fa-info-circle me-2"></i>Statistika
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="small text-muted"><i class="fas fa-eye me-1"></i>Ko'rishlar</span>
+          <strong>{{ ish.views_count or 0 }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-2 border-bottom">
+          <span class="small text-muted"><i class="fas fa-download me-1"></i>Yuklamalar</span>
+          <strong>{{ ish.downloads_count or 0 }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span class="small text-muted"><i class="fas fa-comments me-1"></i>Izohlar</span>
+          <strong>{{ ish.izohlar|length }}</strong>
+        </div>
+      </div>
+    </div>
+
+    {% if ish.muallif.xodim %}
+    <div class="content-card">
+      <div class="card-header">Muallif haqida</div>
+      <div class="card-body text-center">
+        {% set x = ish.muallif.xodim %}
+        <div class="xodim-avatar mx-auto mb-2" style="width:60px;height:60px;font-size:1.5rem;">
+          {% if x.photo_path %}
+            <img src="{{ url_for('download_file', filename=x.photo_path) }}" alt="">
+          {% else %}
+            {{ ish.muallif.full_name[0] }}
+          {% endif %}
+        </div>
+        <div class="fw-bold small">{{ ish.muallif.full_name }}</div>
+        <div class="text-muted" style="font-size:0.78rem;">{{ x.lavozim or '' }}</div>
+        <div class="mt-2">
+          <a href="{{ url_for('xodim_detail', id=x.id) }}" class="btn btn-sm btn-outline-success">
+            Profil
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

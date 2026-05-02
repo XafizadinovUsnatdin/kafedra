@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ yangilik.sarlavha }} — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('yangiliklar_list') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i>Yangiliklarga qaytish
+  </a>
+</div>
+
+<div class="content-card" style="max-width:800px; margin:0 auto;">
+  <div class="card-body">
+    <div class="text-muted small mb-3">
+      <i class="fas fa-calendar-alt me-1"></i>{{ yangilik.created_at.strftime('%d.%m.%Y %H:%M') }}
+      {% if yangilik.muallif %}
+        &bull; <i class="fas fa-user me-1"></i>{{ yangilik.muallif.full_name }}
+      {% endif %}
+    </div>
+    <h3 class="fw-bold mb-4">{{ yangilik.sarlavha }}</h3>
+    <div style="line-height:1.8; font-size:1rem;">{{ yangilik.matn }}</div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Kafedra xodimlari — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <i class="fas fa-users"></i> Kafedra xodimlari
+</div>
+
+{% if xodimlar %}
+<div class="row g-3">
+  {% for x in xodimlar %}
+  <div class="col-md-4 col-lg-3">
+    <div class="xodim-card">
+      <div class="xodim-avatar">
+        {% if x.photo_path %}
+          <img src="{{ url_for('download_file', filename=x.photo_path) }}" alt="{{ x.user.full_name }}">
+        {% else %}
+          {{ x.user.full_name[0] }}
+        {% endif %}
+      </div>
+      <h6>{{ x.user.full_name }}</h6>
+      <div class="lavozim">{{ x.lavozim or "O'qituvchi" }}</div>
+      {% if x.ilmiy_daraja and x.ilmiy_daraja != 'yoq' %}
+        <span class="daraja">{{ x.ilmiy_daraja|upper }}</span>
+      {% endif %}
+      {% if x.kafedra %}
+        <div class="text-muted small mt-2">{{ x.kafedra }}</div>
+      {% endif %}
+      <div class="mt-3">
+        <a href="{{ url_for('xodim_detail', id=x.id) }}" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-eye me-1"></i>Ko'rish
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <i class="fas fa-users"></i>
+  <p>Xodimlar hali qo'shilmagan</p>
+</div>
+{% endif %}
+{% endblock %}

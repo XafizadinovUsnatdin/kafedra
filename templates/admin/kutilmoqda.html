@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block title %}Kutilayotgan ishlar — Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-title">
+  <i class="fas fa-clock"></i> Tasdiqlash kutilayotgan ishlar
+</div>
+
+{% if not ilmiy and not uslubiy %}
+<div class="empty-state">
+  <i class="fas fa-check-circle" style="color:#27ae60;"></i>
+  <p>Tasdiqlash kutilayotgan ishlar yo'q!</p>
+</div>
+{% endif %}
+
+{% if ilmiy %}
+<div class="content-card mb-3">
+  <div class="card-header">
+    <i class="fas fa-flask me-2"></i>Ilmiy ishlar — tasdiqlash kutilmoqda ({{ ilmiy|length }})
+  </div>
+  <div class="card-body p-0">
+    <table class="table-custom table mb-0">
+      <thead>
+        <tr>
+          <th>Sarlavha</th>
+          <th>Muallif</th>
+          <th>Tur</th>
+          <th>Yil</th>
+          <th>Sana</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ish in ilmiy %}
+        <tr>
+          <td>
+            <a href="{{ url_for('ilmiy_detail', id=ish.id) }}" class="fw-semibold text-dark">
+              {{ ish.sarlavha[:60] }}...
+            </a>
+          </td>
+          <td class="small">{{ ish.muallif.full_name }}</td>
+          <td><span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|title }}</span></td>
+          <td class="small">{{ ish.yil }}</td>
+          <td class="small text-muted">{{ ish.created_at.strftime('%d.%m.%Y') }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_ilmiy_tasdiqlash', id=ish.id) }}" class="d-inline">
+              <input type="hidden" name="holat" value="tasdiqlangan">
+              <button class="btn btn-sm btn-success py-0 px-2">
+                <i class="fas fa-check"></i>
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('admin_ilmiy_tasdiqlash', id=ish.id) }}" class="d-inline">
+              <input type="hidden" name="holat" value="rad_etilgan">
+              <button class="btn btn-sm btn-danger py-0 px-2">
+                <i class="fas fa-times"></i>
+              </button>
+            </form>
+            <a href="{{ url_for('ilmiy_detail', id=ish.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+              <i class="fas fa-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if uslubiy %}
+<div class="content-card">
+  <div class="card-header" style="background:#148f77;">
+    <i class="fas fa-book me-2"></i>Uslubiy ishlar — tasdiqlash kutilmoqda ({{ uslubiy|length }})
+  </div>
+  <div class="card-body p-0">
+    <table class="table-custom table mb-0">
+      <thead>
+        <tr>
+          <th>Sarlavha</th>
+          <th>Muallif</th>
+          <th>Tur</th>
+          <th>Fan</th>
+          <th>Sana</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ish in uslubiy %}
+        <tr>
+          <td>
+            <a href="{{ url_for('uslubiy_detail', id=ish.id) }}" class="fw-semibold text-dark">
+              {{ ish.sarlavha[:60] }}...
+            </a>
+          </td>
+          <td class="small">{{ ish.muallif.full_name }}</td>
+          <td><span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|replace('_',' ')|title }}</span></td>
+          <td class="small text-muted">{{ ish.fan_nomi or '—' }}</td>
+          <td class="small text-muted">{{ ish.created_at.strftime('%d.%m.%Y') }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_uslubiy_tasdiqlash', id=ish.id) }}" class="d-inline">
+              <input type="hidden" name="holat" value="tasdiqlangan">
+              <button class="btn btn-sm btn-success py-0 px-2">
+                <i class="fas fa-check"></i>
+              </button>
+            </form>
+            <form method="POST" action="{{ url_for('admin_uslubiy_tasdiqlash', id=ish.id) }}" class="d-inline">
+              <input type="hidden" name="holat" value="rad_etilgan">
+              <button class="btn btn-sm btn-danger py-0 px-2">
+                <i class="fas fa-times"></i>
+              </button>
+            </form>
+            <a href="{{ url_for('uslubiy_detail', id=ish.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+              <i class="fas fa-eye"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

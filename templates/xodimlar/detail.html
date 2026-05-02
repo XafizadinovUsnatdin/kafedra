@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}{{ xodim.user.full_name }} — Kafedra IU Tizimi{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3">
+  <a href="{{ url_for('xodimlar_list') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="fas fa-arrow-left me-1"></i>Orqaga
+  </a>
+  {% if current_user.is_authenticated and current_user.id == xodim.user_id %}
+  <a href="{{ url_for('profil_tahrirlash') }}" class="btn btn-sm btn-outline-primary">
+    <i class="fas fa-edit me-1"></i>Profilni tahrirlash
+  </a>
+  {% endif %}
+</div>
+
+<div class="row g-3">
+  <!-- Profile card -->
+  <div class="col-md-4">
+    <div class="content-card text-center">
+      <div class="card-body py-4">
+        <div class="xodim-avatar mx-auto mb-3" style="width:90px;height:90px;font-size:2.5rem;">
+          {% if xodim.photo_path %}
+            <img src="{{ url_for('download_file', filename=xodim.photo_path) }}" alt="{{ xodim.user.full_name }}">
+          {% else %}
+            {{ xodim.user.full_name[0] }}
+          {% endif %}
+        </div>
+        <h5 class="fw-bold mb-1">{{ xodim.user.full_name }}</h5>
+        <div class="text-muted mb-2">{{ xodim.lavozim or "O'qituvchi" }}</div>
+
+        {% if xodim.ilmiy_daraja and xodim.ilmiy_daraja != 'yoq' %}
+          <span class="badge bg-primary mb-1">{{ xodim.ilmiy_daraja|upper }}</span>
+        {% endif %}
+        {% if xodim.ilmiy_unvon and xodim.ilmiy_unvon != 'yoq' %}
+          <span class="badge bg-secondary mb-1">{{ xodim.ilmiy_unvon|title }}</span>
+        {% endif %}
+
+        {% if xodim.kafedra %}
+          <div class="mt-2 text-muted small">
+            <i class="fas fa-building me-1"></i>{{ xodim.kafedra }}
+          </div>
+        {% endif %}
+        {% if xodim.telefon %}
+          <div class="mt-1 text-muted small">
+            <i class="fas fa-phone me-1"></i>{{ xodim.telefon }}
+          </div>
+        {% endif %}
+        <div class="mt-1 text-muted small">
+          <i class="fas fa-envelope me-1"></i>{{ xodim.user.email }}
+        </div>
+
+        {% if xodim.bio %}
+        <hr>
+        <p class="text-muted small text-start">{{ xodim.bio }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="content-card mt-3">
+      <div class="card-header">Statistika</div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="small">Ilmiy ishlar</span>
+          <span class="fw-bold text-primary">{{ ilmiy|length }}</span>
+        </div>
+        <div class="d-flex justify-content-between py-1">
+          <span class="small">Uslubiy ishlar</span>
+          <span class="fw-bold" style="color:#27ae60;">{{ uslubiy|length }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Works -->
+  <div class="col-md-8">
+    <!-- Ilmiy ishlar -->
+    <div class="content-card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <span><i class="fas fa-flask me-2"></i>Ilmiy ishlar ({{ ilmiy|length }})</span>
+      </div>
+      <div class="card-body p-0">
+        {% if ilmiy %}
+          {% for ish in ilmiy %}
+          <div class="d-flex justify-content-between align-items-start p-3 border-bottom">
+            <div>
+              <a href="{{ url_for('ilmiy_detail', id=ish.id) }}" class="fw-semibold text-dark">
+                {{ ish.sarlavha[:80] }}{% if ish.sarlavha|length > 80 %}...{% endif %}
+              </a>
+              <div class="d-flex gap-2 mt-1">
+                <span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|title }}</span>
+                <small class="text-muted">{{ ish.yil }}</small>
+                {% if ish.nashr_joyi %}
+                  <small class="text-muted">— {{ ish.nashr_joyi }}</small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state py-3"><small class="text-muted">Ilmiy ishlar yo'q</small></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Uslubiy ishlar -->
+    <div class="content-card">
+      <div class="card-header d-flex justify-content-between" style="background:#148f77;">
+        <span><i class="fas fa-book me-2"></i>Uslubiy ishlar ({{ uslubiy|length }})</span>
+      </div>
+      <div class="card-body p-0">
+        {% if uslubiy %}
+          {% for ish in uslubiy %}
+          <div class="d-flex justify-content-between align-items-start p-3 border-bottom">
+            <div>
+              <a href="{{ url_for('uslubiy_detail', id=ish.id) }}" class="fw-semibold text-dark">
+                {{ ish.sarlavha[:80] }}{% if ish.sarlavha|length > 80 %}...{% endif %}
+              </a>
+              <div class="d-flex gap-2 mt-1">
+                <span class="badge-tur badge-{{ ish.tur }}">{{ ish.tur|replace('_',' ')|title }}</span>
+                <small class="text-muted">{{ ish.yil }}</small>
+                {% if ish.fan_nomi %}
+                  <small class="text-muted">— {{ ish.fan_nomi }}</small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state py-3"><small class="text-muted">Uslubiy ishlar yo'q</small></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

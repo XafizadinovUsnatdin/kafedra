@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirish — Kafedra IU Tizimi</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+</head>
+<body>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-university"></i></div>
+      <h4>Tizimga kirish</h4>
+      <p class="text-muted small">Kafedra Ilmiy-Uslubiy Ishlar Tizimi</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-sm py-2">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        <label class="form-label fw-semibold small">
+          <i class="fas fa-user me-1 text-primary"></i>Foydalanuvchi nomi
+        </label>
+        {{ form.username(class="form-control", placeholder="username") }}
+        {% for err in form.username.errors %}
+          <div class="text-danger small">{{ err }}</div>
+        {% endfor %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold small">
+          <i class="fas fa-lock me-1 text-primary"></i>Parol
+        </label>
+        {{ form.password(class="form-control", placeholder="••••••") }}
+        {% for err in form.password.errors %}
+          <div class="text-danger small">{{ err }}</div>
+        {% endfor %}
+      </div>
+      <div class="mb-3 form-check">
+        {{ form.remember(class="form-check-input") }}
+        <label class="form-check-label small">Eslab qolish</label>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">
+        <i class="fas fa-sign-in-alt me-2"></i>Kirish
+      </button>
+    </form>
+
+    <hr class="my-3">
+    <p class="text-center small text-muted mb-0">
+      Hisobingiz yo'qmi?
+      <a href="{{ url_for('register') }}" class="text-primary fw-semibold">Ro'yxatdan o'ting</a>
+    </p>
+    <p class="text-center small mt-2">
+      <a href="{{ url_for('index') }}" class="text-muted">
+        <i class="fas fa-arrow-left me-1"></i>Bosh sahifaga qaytish
+      </a>
+    </p>
+
+    <div class="mt-3 p-2 bg-light rounded small text-muted">
+      <strong>Demo kirish:</strong><br>
+      Admin: <code>admin / admin123</code><br>
+      O'qituvchi: <code>abdullayev / pass123</code>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
