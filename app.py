@@ -14,9 +14,17 @@ from forms import (LoginForm, RegisterForm, IlmiyIshForm, UslubiyIshForm,
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'kafedra-ilmiy-uslubiy-2024-dev-secret')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', f"sqlite:///{os.path.join(os.path.dirname(__file__), 'instance', 'kafedra.db')}"
-)
+basedir = os.path.abspath(os.path.dirname(__file__))
+instance_dir = os.path.join(basedir, 'instance')
+os.makedirs(instance_dir, exist_ok=True)
+
+default_db_path = os.path.join(instance_dir, 'kafedra.db')
+default_db_url = f"sqlite:///{default_db_path}"
+database_url = os.environ.get('DATABASE_URL', default_db_url)
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
