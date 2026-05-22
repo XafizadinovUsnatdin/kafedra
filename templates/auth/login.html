@@ -41,7 +41,13 @@
         <label class="form-label fw-semibold small">
           <i class="fas fa-lock me-1 text-primary"></i>Parol
         </label>
-        {{ form.password(class="form-control", placeholder="••••••") }}
+        <div class="input-group">
+          {{ form.password(class="form-control", placeholder="••••••", autocomplete="current-password") }}
+          <button class="btn btn-outline-secondary" type="button" id="togglePassword"
+                  aria-label="Parolni ko'rsatish/yashirish" aria-pressed="false">
+            <i class="fas fa-eye" id="togglePasswordIcon" aria-hidden="true"></i>
+          </button>
+        </div>
         {% for err in form.password.errors %}
           <div class="text-danger small">{{ err }}</div>
         {% endfor %}
@@ -73,6 +79,22 @@
     </div>
   </div>
 </div>
+<script>
+  (function () {
+    const passwordInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('togglePassword');
+    const toggleIcon = document.getElementById('togglePasswordIcon');
+    if (!passwordInput || !toggleBtn || !toggleIcon) return;
+
+    toggleBtn.addEventListener('click', function () {
+      const isHidden = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isHidden ? 'text' : 'password');
+      toggleIcon.classList.toggle('fa-eye', !isHidden);
+      toggleIcon.classList.toggle('fa-eye-slash', isHidden);
+      toggleBtn.setAttribute('aria-pressed', String(isHidden));
+    });
+  })();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -30,6 +30,18 @@
   --input-bg: #2d3240;
 }
 
+/* Bootstrap text/background utility fixes for dark theme */
+[data-theme="dark"] .text-dark { color: var(--text) !important; }
+[data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
+[data-theme="dark"] .bg-light { background-color: var(--table-head) !important; }
+[data-theme="dark"] .table-light,
+[data-theme="dark"] tr.table-light,
+[data-theme="dark"] .table-light > th,
+[data-theme="dark"] .table-light > td {
+  background-color: var(--table-head) !important;
+  color: var(--text) !important;
+}
+
 * { box-sizing: border-box; }
 
 body {

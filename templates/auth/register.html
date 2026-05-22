@@ -48,12 +48,24 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label fw-semibold small">Parol</label>
-          {{ form.password(class="form-control", placeholder="••••••") }}
+          <div class="input-group">
+            {{ form.password(class="form-control", placeholder="••••••", autocomplete="new-password") }}
+            <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword"
+                    aria-label="Parolni ko'rsatish/yashirish" aria-pressed="false">
+              <i class="fas fa-eye" id="toggleRegisterPasswordIcon" aria-hidden="true"></i>
+            </button>
+          </div>
           {% for err in form.password.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-semibold small">Parolni tasdiqlang</label>
-          {{ form.password2(class="form-control", placeholder="••••••") }}
+          <div class="input-group">
+            {{ form.password2(class="form-control", placeholder="••••••", autocomplete="new-password") }}
+            <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword2"
+                    aria-label="Parolni ko'rsatish/yashirish" aria-pressed="false">
+              <i class="fas fa-eye" id="toggleRegisterPassword2Icon" aria-hidden="true"></i>
+            </button>
+          </div>
           {% for err in form.password2.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
         </div>
       </div>
@@ -72,6 +84,27 @@
     </p>
   </div>
 </div>
+<script>
+  (function () {
+    function wireToggle(inputId, buttonId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const toggleBtn = document.getElementById(buttonId);
+      const toggleIcon = document.getElementById(iconId);
+      if (!passwordInput || !toggleBtn || !toggleIcon) return;
+
+      toggleBtn.addEventListener('click', function () {
+        const isHidden = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isHidden ? 'text' : 'password');
+        toggleIcon.classList.toggle('fa-eye', !isHidden);
+        toggleIcon.classList.toggle('fa-eye-slash', isHidden);
+        toggleBtn.setAttribute('aria-pressed', String(isHidden));
+      });
+    }
+
+    wireToggle('password', 'toggleRegisterPassword', 'toggleRegisterPasswordIcon');
+    wireToggle('password2', 'toggleRegisterPassword2', 'toggleRegisterPassword2Icon');
+  })();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
